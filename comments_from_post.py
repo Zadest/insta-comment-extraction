@@ -8,6 +8,9 @@ import time
 # Fehlerbeispiel : https://www.instagram.com/p/CYv4DvoMjQG/
 
 def timer(func):
+    """ 
+    Documentation : decorator function to time other funtions runtime
+    """
     def wrapper(*arg,**kwargs):
         t1 = time.time()
         res = func(*arg,**kwargs)
@@ -18,6 +21,9 @@ def timer(func):
 
 @timer
 def get_comments_per_post(driver:webdriver,post_URL:str='https://www.instagram.com/p/CPQsVCvnV0m/'):
+    """
+    Documentation : function to request all comments and replies on one post
+    """
     try:
         driver.get(post_URL)
     except TimeoutException as e:
@@ -31,25 +37,26 @@ def get_comments_per_post(driver:webdriver,post_URL:str='https://www.instagram.c
         image_element = driver.find_element(By.XPATH, '//article/div/div[1]//img')
         image_element.get_attribute('alt')
         image_element.get_attribute('src')
+        post['image_src'] = image_element.get_attribute('src')
+        post['image_alt'] = image_element.get_attribute('alt')
     except:
+        post['image_src'] = ''
+        post['image_alt'] = ''
         pass
-    
-    post['image_src'] = image_element.get_attribute('src') if image_element else ''
-    post['image_alt'] = image_element.get_attribute('alt') if image_element else ''
 
     try:     
         caption = driver.find_element(By.XPATH,'//article//ul/div/li/div/div/div[2]/span')
+        post['caption'] = caption.text
     except:
+        post['caption'] = ''
         pass
-    
-    post['caption'] = caption.text if caption else ''
 
     try:
         like_count = driver.find_element(By.XPATH,'//article//section[2]/div/div/a/span')
+        post['likes'] = like_count.text
     except:
+        post['likes'] = ''
         pass
-    
-    post['likes'] = like_count.text if like_count else ''
 
     try:
         show_more = driver.find_element(By.XPATH, '//article/div/div[2]/div/div[2]/div[1]/ul/li')
@@ -100,7 +107,7 @@ def get_comments_per_post(driver:webdriver,post_URL:str='https://www.instagram.c
             temp_comment["username"] = username
             temp_comment["comment"] = content
             try:
-                likes = comment.find_element(By.XPATH,'.//button[contains(text(),"like")]').text[0]
+                likes = int(comment.find_element(By.XPATH,'.//button[contains(text(),"like")]').text[0])
             except:
                 likes = 0
             temp_comment["likes"] = likes
