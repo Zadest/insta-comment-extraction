@@ -97,7 +97,7 @@ def get_post_links(driver):
 
     return distinct_links
 
-@timer
+
 def main(debug=True):
     print("> executing Firefox")
     driver = webdriver.Firefox()
