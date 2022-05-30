@@ -9,6 +9,7 @@ Repository for extracting insta comments for @ichbinsophiescholl
     # activate .env
     (env) python -m pip install -r requirements.txt
  ```
+ - Within the `.env/bin` you will need to place the executable [geckodriver](https://github.com/mozilla/geckodriver/releases) for your system
  - you also need to create a `config.py` containing:
 ```python
     USERNAME = "YOUR_USERNAME"

@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 from comments_from_post import get_comments_per_post
 import time
@@ -7,6 +8,8 @@ import json
 import sys
 import os
 from config import USERNAME, PASSWORD
+
+import pickle
 
 LINKS = []
 POSTS = []
@@ -54,15 +57,25 @@ def login(driver):
     print("> wait for the pages to load (8 seconds)")
     time.sleep(8)
 
+
+
 @timer
 def basic_setup(driver):
-    safe_info_button = driver.find_element(By.XPATH, '//button[text()="Not Now"]')
-    safe_info_button.click()
+    try:
+        safe_info_button = driver.find_element(By.XPATH, '//button[text()="Not Now"]')
+        safe_info_button.click()
+        raise NoSuchElementException
+    except NoSuchElementException as e:
+        print(e)
     print("> do not activate notifications data")
     print("> wait for the pages to load (8 seconds)")
     time.sleep(8)
-    notification_button = driver.find_element(By.XPATH, '//button[text()="Not Now"]')
-    notification_button.click()
+    try:
+        notification_button = driver.find_element(By.XPATH, '//button[text()="Not Now"]')
+        notification_button.click()
+        raise NoSuchElementException
+    except NoSuchElementException as e:
+        print(e)
     print("> do not save the login data")
     print("> wait for the pages to load (8 seconds)")
     time.sleep(8)
@@ -70,6 +83,7 @@ def basic_setup(driver):
     print("> load https://www.instagram.com/ichbinsophiescholl/ and wait 8 seconds")
     driver.get('https://www.instagram.com/ichbinsophiescholl/') 
     time.sleep(8)
+    pickle.dump(driver.get_cookies(),open("cookies.pkl","wb"))
 
 @timer
 def get_post_links(driver):
@@ -106,7 +120,7 @@ def main(debug=True):
     login(driver)
     basic_setup(driver)
 
-    post_count = driver.find_element(By.XPATH,"//header/section//span/span")
+    post_count = driver.find_element(By.XPATH,"//header/section//ul/li//span")
     post_links = []
     if os.path.exists("./postlinks.json"):
         with open('./postlinks.json','r') as f:
@@ -127,19 +141,22 @@ def main(debug=True):
 def test():
     print("> executing Firefox")
     driver = webdriver.Firefox()
+    driver.get("http://instagram.com")
+    time.sleep(1)
 
     driver.maximize_window()
+
     login(driver)
     basic_setup(driver)
 
-    post_count = driver.find_element(By.XPATH,"//header/section//span/span")
+    post_count = driver.find_element(By.XPATH,"//header/section/ul/li//span")
     post_links = []
     if os.path.exists("./postlinks.json"):
         with open('./postlinks.json','r') as f:
             post_links = json.load(f)
     
     distinct_links = []
-    if len(post_links) != int(post_count.text):
+    if post_count.text and len(post_links) != int(post_count.text):
         distinct_links = get_post_links(driver)
     else:
         distinct_links = post_links

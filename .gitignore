@@ -3,3 +3,9 @@
 config.py
 
 __pycache__
+
+**geckodriver**
+
+save.json
+
+postlinks.json

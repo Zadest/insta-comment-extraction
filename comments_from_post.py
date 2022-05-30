@@ -35,28 +35,28 @@ def get_comments_per_post(driver:webdriver,post_URL:str='https://www.instagram.c
     post['link'] = post_URL
     try:
         image_element = driver.find_element(By.XPATH, '//article/div/div[1]//img')
-        image_element.get_attribute('alt')
-        image_element.get_attribute('src')
         post['image_src'] = image_element.get_attribute('src')
         post['image_alt'] = image_element.get_attribute('alt')
+        
     except:
         post['image_src'] = ''
         post['image_alt'] = ''
         pass
 
     try:     
-        caption = driver.find_element(By.XPATH,'//article//ul/div/li/div/div/div[2]/span')
+        caption = driver.find_element(By.XPATH,'//section/main//article/div/div[2]/div/div[2]/div[1]/ul/div/li/div/div/div[2]/div[1]/span')
         post['caption'] = caption.text
     except:
         post['caption'] = ''
         pass
-
+    
     try:
-        like_count = driver.find_element(By.XPATH,'//article//section[2]/div/div/a/span')
+        like_count = driver.find_element(By.XPATH,'//article//section[2]//span')
         post['likes'] = like_count.text
     except:
         post['likes'] = ''
         pass
+    
 
     try:
         show_more = driver.find_element(By.XPATH, '//article/div/div[2]/div/div[2]/div[1]/ul/li')
@@ -99,21 +99,25 @@ def get_comments_per_post(driver:webdriver,post_URL:str='https://www.instagram.c
             break
 
     comments = []
-    for comment in driver.find_elements(By.XPATH, '//article//ul//li'):
+    for comment in driver.find_elements(By.XPATH, '//section/main//article//div[2]//ul/ul'):
+        print(comment)
         try:
-            username = comment.find_element(By.XPATH,'.//h3//span[not(contains(text(),"View reply"))]').text
-            content = comment.find_element(By.XPATH,'./div/div/div/span').text
+            username = comment.find_element(By.XPATH,'.//h3').text
+            content = comment.find_element(By.XPATH,'.//h3/following-sibling::div//span').text
+            print(f"{username=},{content=}")
             temp_comment = {}
             temp_comment["username"] = username
             temp_comment["comment"] = content
             try:
-                likes = int(comment.find_element(By.XPATH,'.//button[contains(text(),"like")]').text[0])
+                likes = int(comment.find_element(By.XPATH,'.//div[contains(text(),"like")]').text[0])
             except:
                 likes = 0
             temp_comment["likes"] = likes
             comments.append(temp_comment)
+            print(temp_comment)
         except:
             pass
     post['comments'] = comments
+    
     print('>>',len(comments),"Kommentar[e] extrahiert.")
     return post
