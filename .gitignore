@@ -9,3 +9,5 @@ __pycache__
 save.json
 
 postlinks.json
+
+*.pkl
