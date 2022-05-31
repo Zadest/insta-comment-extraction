@@ -1,5 +1,5 @@
 # insta-comment-extraction
-insta-comment-extraction is an application that allows you to scrape comments from a specified account from the current Instagram website (as of 31.05.2022). The software is merely an illustration of how scraping might work, please note that using it would violate Instagram's terms of use.
+insta-comment-extraction is an application that allows you to scrape the texts of posts and their comments from a specified account from the current Instagram website (as of 31.05.2022). The software is merely an illustration of how scraping might work, please note that using it would violate Instagram's terms of use.
 
 # Usage (please read the section above)
  - you need at least `python3.8` and the modules in `requirements.txt`
